@@ -1,8 +1,44 @@
+def PreownedKittenProject(name: String): Project = {
+	Project(name, file(name))
+}
+
 name := "preowned-kittens"
 
 organization := "com.preowned-kittens"
 
 version := "1.0"
 
-libraryDependencies +=
-"org.specs2" % "specs2_2.10" % "1.14" % "test"
+val gitHeadCommitSha = taskKey[String]("Determines the current git commit SHA")
+
+gitHeadCommitSha := Process("git rev-parse HEAD").lines.head
+
+val makeVersionProperties = taskKey[Seq[File]]("Makes version.properties file.")
+
+makeVersionProperties := {
+	val propFile = new File((resourceManaged in Compile).value, "version.properties")
+	val content = "version=%s" format (gitHeadCommitSha.value)
+	IO.write(propFile,content)
+	Seq(propFile)
+}
+
+//resourceGenerators in Compile += makeVersionProperties
+
+lazy val common = (
+	Project("common", file("common")).
+	settings(
+		libraryDependencies +=
+			"org.specs2" % "specs2_2.10" % "1.14" % "test"
+	)
+)
+
+lazy val analytics = (
+	Project("analytics", file("analytics"))
+	dependsOn(common)
+	settings()
+)
+
+lazy val website = (
+	Project("website", file("website"))
+	dependsOn(common)
+	settings()
+)
