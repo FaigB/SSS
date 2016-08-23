@@ -1,3 +1,5 @@
+package com.preownedkittens
+
 import org.specs2.mutable.Specification
 
 object LogicSpec extends Specification {

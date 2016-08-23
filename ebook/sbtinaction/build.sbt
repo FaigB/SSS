@@ -1,44 +1,59 @@
-def PreownedKittenProject(name: String): Project = {
-	Project(name, file(name))
-}
-
 name := "preowned-kittens"
 
-organization := "com.preowned-kittens"
+resolvers += "Preowned Kitten Maven Repostory" at "http://internal-repo.preowned-kittens.com"
 
-version := "1.0"
+//Custom keys for this build
 
 val gitHeadCommitSha = taskKey[String]("Determines the current git commit SHA")
 
-gitHeadCommitSha := Process("git rev-parse HEAD").lines.head
-
 val makeVersionProperties = taskKey[Seq[File]]("Makes version.properties file.")
 
-makeVersionProperties := {
-	val propFile = new File((resourceManaged in Compile).value, "version.properties")
-	val content = "version=%s" format (gitHeadCommitSha.value)
-	IO.write(propFile,content)
-	Seq(propFile)
+//Common settings/definitions for this build
+
+
+
+def PreownedKittenProject(name: String): Project = {
+	Project(name, file(name)).
+	settings(
+		organization := "com.preownedkittens",
+		version := "1.0",
+		libraryDependencies += "org.specs2" %% "specs2" % "1.14" % "test",
+		libraryDependencies += "org.pegdown" % "pegdown" % "1.0.2" % "test",
+		libraryDependencies += "junit" % "junit" % "4.11" % "test",
+		libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test"
+		)
 }
 
-//resourceGenerators in Compile += makeVersionProperties
+gitHeadCommitSha in ThisBuild := Process("git rev-parse HEAD").lines.head
+
+//Projects in this build
 
 lazy val common = (
-	Project("common", file("common")).
+	PreownedKittenProject("common").
 	settings(
-		libraryDependencies +=
-			"org.specs2" % "specs2_2.10" % "1.14" % "test"
+		makeVersionProperties := {
+			val propFile = new File((resourceManaged in Compile).value, "version.properties")
+			val content = "version=%s" format (gitHeadCommitSha.value)
+			IO.write(propFile,content)
+			Seq(propFile)
+		}
 	)
 )
 
+fork in Test := true
+
+javaOptions in Test += "-Dspecs2.outDir=" + (target.value/"generated/test-reports").getAbsolutePath
+
+testOptions in Test += Tests.Argument("HTML")
+
 lazy val analytics = (
-	Project("analytics", file("analytics"))
-	dependsOn(common)
+	PreownedKittenProject("analytics").
+	dependsOn(common).
 	settings()
 )
 
 lazy val website = (
-	Project("website", file("website"))
-	dependsOn(common)
+	PreownedKittenProject("website").
+	dependsOn(common).
 	settings()
 )
