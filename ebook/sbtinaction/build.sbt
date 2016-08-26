@@ -10,17 +10,11 @@ val makeVersionProperties = taskKey[Seq[File]]("Makes version.properties file.")
 
 //Common settings/definitions for this build
 
-
-
 def PreownedKittenProject(name: String): Project = {
 	Project(name, file(name)).
 	settings(
 		organization := "com.preownedkittens",
-		version := "1.0",
-		libraryDependencies += "org.specs2" %% "specs2" % "1.14" % "test",
-		libraryDependencies += "org.pegdown" % "pegdown" % "1.0.2" % "test",
-		libraryDependencies += "junit" % "junit" % "4.11" % "test",
-		libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test"
+		version := "1.0"
 		)
 }
 
@@ -39,12 +33,6 @@ lazy val common = (
 		}
 	)
 )
-
-fork in Test := true
-
-javaOptions in Test += "-Dspecs2.outDir=" + (target.value/"generated/test-reports").getAbsolutePath
-
-testOptions in Test += Tests.Argument("HTML")
 
 lazy val analytics = (
 	PreownedKittenProject("analytics").

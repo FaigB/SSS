@@ -1,4 +1,4 @@
 package com.preownedkittens
 
-case class Kitten(id: Long, attributes: Seq[String])
-case class BuyerPreferences(attributes: Seq[String])
+case class Kitten(id: Long, attributes: Set[String])
+case class BuyerPreferences(attributes: Set[String])
