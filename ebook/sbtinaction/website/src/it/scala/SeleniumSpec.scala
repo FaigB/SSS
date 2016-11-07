@@ -5,11 +5,11 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FlatSpec, ShouldMatcher
   * Created by faig.babayev on 9/6/2016.
   */
 class SeleniumSpec  extends FlatSpec with ShouldMatchers with BeforeAndAfter with BeforeAndAfterAll with HtmlUnit {
-  val homePage : String = "http://gateway.test.accenturedataplatform.com:9000"
+  val homePage : String = "http://localhost:9000"
 
   "Home page" should "redirect to kitten list" in {
-    go to "http://gateway.test.accenturedataplatform.com:9000"
-    currentUrl should startWith ("http://gateway.test.accenturedataplatform.com:9000/kittens")
+    go to "http://localhost:9000"
+    currentUrl should startWith ("http://localhost:9000/kittens")
   }
 
   it should "show three dropdown lists of attributes in sorted order" in {
